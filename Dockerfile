@@ -43,7 +43,7 @@ RUN sudo -u www-data python -c "from gluon.main import save_password; save_passw
 
 CMD [ "python", "./my_script.py" ]
 
-
+COPY /nltk /var/www/web2py/applications/
 EXPOSE 80
 EXPOSE 443
 
