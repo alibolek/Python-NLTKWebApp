@@ -41,7 +41,7 @@ WORKDIR /var/www/web2py
 RUN sudo -u www-data python -c "from gluon.main import save_password; save_password('123',8443)"
 
 
-
+CMD [ "python", "./my_script.py" ]
 
 
 EXPOSE 80
