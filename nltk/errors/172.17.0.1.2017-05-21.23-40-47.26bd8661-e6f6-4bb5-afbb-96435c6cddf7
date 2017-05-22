@@ -1,0 +1,374 @@
+(dp1
+S'output'
+p2
+S"<type 'exceptions.ImportError'> Cannot import module 'applications.nltk.modules.nltk'"
+p3
+sS'layer'
+p4
+S'/var/www/web2py/applications/nltk/controllers/default.py'
+p5
+sS'code'
+p6
+S'# -*- coding: utf-8 -*-\nimport nltk\nfrom nltk.corpus import stopwords #stopwords\nfrom nltk.tokenize import word_tokenize,sent_tokenize #tokenize\nfrom nltk.stem.snowball import SnowballStemmer #stemming\nfrom nltk.stem.porter import *\nfrom nltk.corpus import state_union #part of speech\nfrom nltk.corpus import wordnet as wn\nfrom nltk.sentiment.vader import SentimentIntensityAnalyzer\n\n\t\ndef index():\n\t\n\treturn locals()\n\ndef tokenizer():\n\tif len(request.vars)!=0:\n\t\tuser_input=request.vars\n\t\timport sys\n\t\treload(sys)\n\t\tsys.setdefaultencoding(\'utf-8\')\n\t\tif user_input.parameter=="sentence":\n\t\t\t\n\t\t\tour_output=nltk.sent_tokenize(user_input.input,"english")\n\t\t\tprint user_input\n\t\t\tif request.vars.filename!=\'\' and len(request.vars.filename.value)!="":\n\t\t\t\tfile_input=user_input.filename.value\n\t\t\t\tfile_output=nltk.word_tokenize(file_input,"english")\n\t\t\tprint our_output\n\t\telse:\n\t\t\tour_output=nltk.word_tokenize(user_input.input,"english")\n\t\t\tif request.vars.filename!=\'\' and len(request.vars.filename.value)!=None:\n\t\t\t\tfile_input=user_input.filename.value\n\t\t\t\tfile_output=nltk.word_tokenize(file_input,"english")\n\t\t\t\n\t\t\t\n\t\tuser_input.output=our_output\n\t\t\n\n\treturn locals()\n\ndef stop_words():\n\tif len(request.vars)!=0:\n\t\timport sys\n\t\treload(sys)  \n\t\tsys.setdefaultencoding(\'utf8\')\n\t\tuser_input=request.vars\n\t\tlast=[]\n\t\tprint stopwords.words()\n\t\tif user_input.parameter=="turkish":\n\t\t\tstop_words=set(stopwords.words("turkish"))\n\t\t\ttokenized=word_tokenize(user_input.input,\'turkish\')\n\t\telse:\n\t\t\tstop_words=set(stopwords.words("english"))\n\t\t\ttokenized=word_tokenize(user_input.input,\'turkish\')\n\t\tfor w in tokenized:\n\t\t\tif w in stop_words:\n\t\t\t\tlast.append(w)\n\t\tprint last\n\treturn locals()\n\ndef stemming():\n\tif len(request.vars)!=0:\n\t\tuser_input=request.vars\n\t\ttokenized=word_tokenize(user_input.input,\'english\')\n\t\tif user_input.parameter=="snowball":\n\t\t\tstemmer = SnowballStemmer("english")\n\t\t\tprint " ".join(SnowballStemmer.languages)\n\t\telse:\n\t\t\tstemmer = PorterStemmer()\n\t\t\t\n\t\tlast=[]\n\t\tfor w in tokenized:\n\t\t\tlast.append(stemmer.stem(w))\n\t\t\n\treturn locals()\n\ndef part_of_speech():\n\tif len(request.vars)!=0:\n\t\tuser_input=request.vars\n\t\t\n\t\ttokenized=word_tokenize(user_input.input,"english")\n\t\ttag_list=[]\n\t\ttry:\n\t\t\ttagged=nltk.pos_tag(tokenized)\n\t\t\tfor t in tagged:\n\t\t\t\ttag_list.append(t)\n\t\t\tprint tag_list\n\t\texcept Exception as e:\n\t\t\tprint str(e)\n\treturn locals()\n\ndef meaning():\n\tif len(request.vars)!=0:\n\t\tuser_input=request.vars\n\t\t#tokenized=word_tokenize(user_input.input,"english")\n\t\tsynset=wn.synsets(user_input.input)\t\n\treturn locals()\n\ndef sentiment_analyse():\n\tif len(request.vars)!=0:\n\t\tuser_input=request.vars\n\t\ttokenized=sent_tokenize(user_input.input,"english")\n\t\tsid = SentimentIntensityAnalyzer()\n\t\tif request.vars.filename!=\'\' and len(request.vars.filename.value)!="":\n\t\t\tprint request.vars.filename.value\n\t\t\tfile_input=user_input.filename.value\n\t\t\tfile_output_sent=nltk.sent_tokenize(file_input,"english")\n\treturn locals()\n\t\ndef contact():\n\tuser_input=request.vars\n\tif user_input.input=="To See Contact Information Execute Me :)":\n\t\toutput="**Project Owner: Muhammed Ali Bolek \\n**Mail:muhammedalibolek@gmail.com \\n**Project Instructor:Bekir Taner Din\xc3\xa7er(Phd.)"\n\telse:output="This is not correct text to see contact information"\n\treturn locals()\n\n\ndef user():\n\t"""\n\texposes:\n\thttp://..../[app]/default/user/login\n\thttp://..../[app]/default/user/logout\n\thttp://..../[app]/default/user/register\n\thttp://..../[app]/default/user/profile\n\thttp://..../[app]/default/user/retrieve_password\n\thttp://..../[app]/default/user/change_password\n\thttp://..../[app]/default/user/bulk_register\n\tuse @auth.requires_login()\n\t\t@auth.requires_membership(\'group name\')\n\t\t@auth.requires_permission(\'read\',\'table name\',record_id)\n\tto decorate functions that need access control\n\talso notice there is http://..../[app]/appadmin/manage/auth to allow administrator to manage users\n\t"""\n\treturn dict(form=auth())\n\n\n@cache.action()\ndef download():\n\t"""\n\tallows downloading of uploaded files\n\thttp://..../[app]/default/download/[filename]\n\t"""\n\treturn response.download(request, db)\n\n\ndef call():\n\t"""\n\texposes services. for example:\n\thttp://..../[app]/default/call/jsonrpc\n\tdecorate with @services.jsonrpc the functions to expose\n\tsupports xml, json, xmlrpc, jsonrpc, amfrpc, rss, csv\n\t"""\n\treturn service()\n\n\n\nresponse._vars=response._caller(index)\n'
+p7
+sS'snapshot'
+p8
+(dp9
+S'exception'
+p10
+(dp11
+S'__hash__'
+p12
+S"<method-wrapper '__hash__' of exceptions.ImportError object>"
+p13
+sS'__setattr__'
+p14
+S"<method-wrapper '__setattr__' of exceptions.ImportError object>"
+p15
+sS'__reduce_ex__'
+p16
+S'<built-in method __reduce_ex__ of exceptions.ImportError object>'
+p17
+sS'__getslice__'
+p18
+S"<method-wrapper '__getslice__' of exceptions.ImportError object>"
+p19
+sS'__getitem__'
+p20
+S"<method-wrapper '__getitem__' of exceptions.ImportError object>"
+p21
+sS'__setstate__'
+p22
+S'<built-in method __setstate__ of exceptions.ImportError object>'
+p23
+sS'args'
+p24
+S'("Cannot import module \'applications.nltk.modules.nltk\'",)'
+p25
+sS'__reduce__'
+p26
+S'<built-in method __reduce__ of exceptions.ImportError object>'
+p27
+sS'__str__'
+p28
+S"<method-wrapper '__str__' of exceptions.ImportError object>"
+p29
+sS'__format__'
+p30
+S'<built-in method __format__ of exceptions.ImportError object>'
+p31
+sS'__getattribute__'
+p32
+S"<method-wrapper '__getattribute__' of exceptions.ImportError object>"
+p33
+sS'__class__'
+p34
+S"<type 'exceptions.ImportError'>"
+p35
+sS'__unicode__'
+p36
+S'<built-in method __unicode__ of exceptions.ImportError object>'
+p37
+sS'__delattr__'
+p38
+S"<method-wrapper '__delattr__' of exceptions.ImportError object>"
+p39
+sS'__subclasshook__'
+p40
+S'<built-in method __subclasshook__ of type object>'
+p41
+sS'__repr__'
+p42
+S"<method-wrapper '__repr__' of exceptions.ImportError object>"
+p43
+sS'__dict__'
+p44
+S'{}'
+p45
+sS'__sizeof__'
+p46
+S'<built-in method __sizeof__ of exceptions.ImportError object>'
+p47
+sS'__doc__'
+p48
+S'"Import can\'t find module, or can\'t find name in module."'
+p49
+sS'__init__'
+p50
+S"<method-wrapper '__init__' of exceptions.ImportError object>"
+p51
+sS'__new__'
+p52
+S'<built-in method __new__ of type object>'
+p53
+ssS'evalue'
+p54
+S"Cannot import module 'applications.nltk.modules.nltk'"
+p55
+sS'request'
+p56
+cgluon.html
+XML_unpickle
+p57
+(S's=l\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">ajax</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">application</td><td style="vertical-align:top;">:</td><td><div>nltk</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">args</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cid</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">client</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">controller</td><td style="vertical-align:top;">:</td><td><div>default</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_admin</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1-df673662-da3e-4b9d-96b2-25ab6cbd0f7a<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_nltk</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1-24e9dbde-e1c6-49b0-9e35-18147250cb16<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_welcome</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1-f6991671-f764-46c3-bc57-b9bcda02e51e<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">env</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">CONTEXT_DOCUMENT_ROOT</td><td style="vertical-align:top;">:</td><td><div>/var/www/html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">CONTEXT_PREFIX</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">DOCUMENT_ROOT</td><td style="vertical-align:top;">:</td><td><div>/var/www/html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">GATEWAY_INTERFACE</td><td style="vertical-align:top;">:</td><td><div>CGI/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_ENCODING</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, sdch, br</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_ACCEPT_LANGUAGE</td><td style="vertical-align:top;">:</td><td><div>tr-TR,tr;q=0.8,en-US;q=0.6,en;q=0.4</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_CONNECTION</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_COOKIE</td><td style="vertical-align:top;">:</td><td><div>session_id_nltk=172.17.0.1-24e9dbde-e1c6-49b0-9e35-18147250cb16; session_id_welcome=172.17.0.1-f6991671-f764-46c3-bc57-b9bcda02e51e; session_id_admin=172.17.0.1-df673662-da3e-4b9d-96b2-25ab6cbd0f7a</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_HOST</td><td style="vertical-align:top;">:</td><td><div>0.0.0.0:8443</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_REFERER</td><td style="vertical-align:top;">:</td><td><div>https://0.0.0.0:8443/admin/default/site</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_UPGRADE_INSECURE_REQUESTS</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">HTTP_USER_AGENT</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_INFO</td><td style="vertical-align:top;">:</td><td><div>/nltk/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">PATH_TRANSLATED</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py/wsgihandler.py/nltk/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">QUERY_STRING</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_ADDR</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REMOTE_PORT</td><td style="vertical-align:top;">:</td><td><div>47932</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_METHOD</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_SCHEME</td><td style="vertical-align:top;">:</td><td><div>https</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">REQUEST_URI</td><td style="vertical-align:top;">:</td><td><div>/nltk/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_FILENAME</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py/wsgihandler.py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SCRIPT_NAME</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_ADDR</td><td style="vertical-align:top;">:</td><td><div>172.17.0.2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_ADMIN</td><td style="vertical-align:top;">:</td><td><div>[no address given]</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_NAME</td><td style="vertical-align:top;">:</td><td><div>0.0.0.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PORT</td><td style="vertical-align:top;">:</td><td><div>8443</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_PROTOCOL</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_SIGNATURE</td><td style="vertical-align:top;">:</td><td><div>&lt;address&gt;Apache/2.4.10 (Debian) Server at 0.0.0.0 Port 8443&lt;/address&gt;\n</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">SERVER_SOFTWARE</td><td style="vertical-align:top;">:</td><td><div>Apache/2.4.10 (Debian)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">apache.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>2</div></td></tr><tr><td><div>4</div></td></tr><tr><td><div>10</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">apache_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>2</div></td></tr><tr><td><div>4</div></td></tr><tr><td><div>10</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/var/www/web2py/applications/nltk/&#x27;, &#x27;/var/www/web2py/applications/welcome/&#x27;, &#x27;/var/www/web2py/applications/admin/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">context_document_root</td><td style="vertical-align:top;">:</td><td><div>/var/www/html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">context_prefix</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">document_root</td><td style="vertical-align:top;">:</td><td><div>/var/www/html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gateway_interface</td><td style="vertical-align:top;">:</td><td><div>CGI/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept</td><td style="vertical-align:top;">:</td><td><div>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_encoding</td><td style="vertical-align:top;">:</td><td><div>gzip, deflate, sdch, br</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_accept_language</td><td style="vertical-align:top;">:</td><td><div>tr-TR,tr;q=0.8,en-US;q=0.6,en;q=0.4</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_connection</td><td style="vertical-align:top;">:</td><td><div>keep-alive</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_cookie</td><td style="vertical-align:top;">:</td><td><div>session_id_nltk=172.17.0.1-24e9dbde-e1c6-49b0-9e35-18147250cb16; session_id_welcome=172.17.0.1-f6991671-f764-46c3-bc57-b9bcda02e51e; session_id_admin=172.17.0.1-df673662-da3e-4b9d-96b2-25ab6cbd0f7a</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_host</td><td style="vertical-align:top;">:</td><td><div>0.0.0.0:8443</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_referer</td><td style="vertical-align:top;">:</td><td><div>https://0.0.0.0:8443/admin/default/site</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_upgrade_insecure_requests</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">http_user_agent</td><td style="vertical-align:top;">:</td><td><div>Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>172.17.0.2</div></td></tr><tr><td><div>aab008337f69</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>0.0.0.0</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.application_group</td><td style="vertical-align:top;">:</td><td><div>my.server.name.org:8443|</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.callable_object</td><td style="vertical-align:top;">:</td><td><div>application</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.enable_sendfile</td><td style="vertical-align:top;">:</td><td><div>0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.handler_script</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.input_chunked</td><td style="vertical-align:top;">:</td><td><div>0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.listener_host</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.listener_port</td><td style="vertical-align:top;">:</td><td><div>443</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.process_group</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.request_handler</td><td style="vertical-align:top;">:</td><td><div>wsgi-script</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.request_start</td><td style="vertical-align:top;">:</td><td><div>1495410047200057</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.script_reloading</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.script_start</td><td style="vertical-align:top;">:</td><td><div>1495410047200231</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>4</div></td></tr><tr><td><div>3</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_application_group</td><td style="vertical-align:top;">:</td><td><div>my.server.name.org:8443|</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_callable_object</td><td style="vertical-align:top;">:</td><td><div>application</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_enable_sendfile</td><td style="vertical-align:top;">:</td><td><div>0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_handler_script</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_input_chunked</td><td style="vertical-align:top;">:</td><td><div>0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_listener_host</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_listener_port</td><td style="vertical-align:top;">:</td><td><div>443</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_process_group</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_request_handler</td><td style="vertical-align:top;">:</td><td><div>wsgi-script</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_request_start</td><td style="vertical-align:top;">:</td><td><div>1495410047200057</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_script_reloading</td><td style="vertical-align:top;">:</td><td><div>1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_script_start</td><td style="vertical-align:top;">:</td><td><div>1495410047200231</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">mod_wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>4</div></td></tr><tr><td><div>3</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_info</td><td style="vertical-align:top;">:</td><td><div>/nltk/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path_translated</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py/wsgihandler.py/nltk/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">query_string</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_addr</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">remote_port</td><td style="vertical-align:top;">:</td><td><div>47932</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_method</td><td style="vertical-align:top;">:</td><td><div>GET</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_scheme</td><td style="vertical-align:top;">:</td><td><div>https</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">request_uri</td><td style="vertical-align:top;">:</td><td><div>/nltk/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_filename</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py/wsgihandler.py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">script_name</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_addr</td><td style="vertical-align:top;">:</td><td><div>172.17.0.2</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_admin</td><td style="vertical-align:top;">:</td><td><div>[no address given]</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_name</td><td style="vertical-align:top;">:</td><td><div>0.0.0.0</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_port</td><td style="vertical-align:top;">:</td><td><div>8443</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_protocol</td><td style="vertical-align:top;">:</td><td><div>HTTP/1.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_signature</td><td style="vertical-align:top;">:</td><td><div>&lt;address&gt;Apache/2.4.10 (Debian) Server at 0.0.0.0 Port 8443&lt;/address&gt;\n</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">server_software</td><td style="vertical-align:top;">:</td><td><div>Apache/2.4.10 (Debian)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_path</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.errors</td><td style="vertical-align:top;">:</td><td><div>&lt;mod_wsgi.Log object at 0x7f8ae5a58348&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;type &#x27;mod_wsgi.FileWrapper&#x27;&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.input</td><td style="vertical-align:top;">:</td><td><div>&lt;mod_wsgi.Input object at 0x7f8ae5a564b0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multiprocess</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.url_scheme</td><td style="vertical-align:top;">:</td><td><div>https</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi.version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_errors</td><td style="vertical-align:top;">:</td><td><div>&lt;mod_wsgi.Log object at 0x7f8ae5a58348&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_file_wrapper</td><td style="vertical-align:top;">:</td><td><div>&lt;type &#x27;mod_wsgi.FileWrapper&#x27;&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_input</td><td style="vertical-align:top;">:</td><td><div>&lt;mod_wsgi.Input object at 0x7f8ae5a564b0&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multiprocess</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_multithread</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_run_once</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_url_scheme</td><td style="vertical-align:top;">:</td><td><div>https</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi_version</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>1</div></td></tr><tr><td><div>0</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">extension</td><td style="vertical-align:top;">:</td><td><div>html</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">folder</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py/applications/nltk/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">function</td><td style="vertical-align:top;">:</td><td><div>index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">global_settings</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">app_folders</td><td style="vertical-align:top;">:</td><td><div>set([&#x27;/var/www/web2py/applications/nltk/&#x27;, &#x27;/var/www/web2py/applications/welcome/&#x27;, &#x27;/var/www/web2py/applications/admin/&#x27;])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">applications_parent</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">db_sessions</td><td style="vertical-align:top;">:</td><td><div>set([])</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">debugging</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">gluon_parent</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_jython</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_pypy</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_source</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">local_hosts</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>172.17.0.2</div></td></tr><tr><td><div>aab008337f69</div></td></tr><tr><td><div>::ffff:127.0.0.1</div></td></tr><tr><td><div>::1</div></td></tr><tr><td><div>0.0.0.0</div></td></tr><tr><td><div>127.0.0.1</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">web2py_version</td><td style="vertical-align:top;">:</td><td><div>2.14.6-stable+timestamp.2016.05.10.00.21.47</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_https</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_local</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_restful</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_scheduler</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">is_shell</td><td style="vertical-align:top;">:</td><td><div>False</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">now</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2017, 5, 21, 23, 40, 47, 200316)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_args</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">raw_extension</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">url</td><td style="vertical-align:top;">:</td><td><div>/nltk/default/index</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">utcnow</td><td style="vertical-align:top;">:</td><td><div>datetime.datetime(2017, 5, 21, 23, 40, 47, 200334)</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">wsgi</td><td style="vertical-align:top;">:</td><td><div>&lt;gluon.main.LazyWSGI object at 0x7f8ae5a3d6d0&gt;</div></td></tr></table></div>'
+tRp58
+sS'frames'
+p59
+(lp60
+(dp61
+S'file'
+p62
+S'/var/www/web2py/gluon/restricted.py'
+p63
+sS'dump'
+p64
+(dp65
+S'environment'
+p66
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}"
+p67
+sS'ccode'
+p68
+S'<code object <module> at 0x7f8ae5c78eb0, file "/...pplications/nltk/controllers/default.py", line 2>'
+p69
+ssS'lnum'
+p70
+I227
+sS'lines'
+p71
+(dp72
+I224
+S'            ccode = code'
+p73
+sI225
+S'        else:'
+p74
+sI226
+S'            ccode = compile2(code, layer)'
+p75
+sI227
+S'        exec ccode in environment'
+p76
+sI228
+S'    except HTTP:'
+p77
+sI229
+S'        raise'
+p78
+sI230
+S'    except RestrictedError:'
+p79
+sI231
+S'        # do not encapsulate (obfuscate) the original RestrictedError'
+p80
+sI222
+S'    try:'
+p81
+sI223
+S'        if isinstance(code, types.CodeType):'
+p82
+ssS'call'
+p83
+S"(code='# -*- coding: utf-8 -*-\\nimport nltk\\nfrom nltk.co...vice()\\n\\n\\n\\nresponse._vars=response._caller(index)\\n', environment={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}, layer='/var/www/web2py/applications/nltk/controllers/default.py')"
+p84
+sS'func'
+p85
+S'restricted'
+p86
+sa(dp87
+g62
+S'/var/www/web2py/applications/nltk/controllers/default.py'
+p88
+sg64
+(dp89
+S'nltk'
+p90
+S'undefined'
+p91
+ssg70
+I2
+sg71
+(dp92
+I2
+S'import nltk'
+p93
+sI3
+S'from nltk.corpus import stopwords #stopwords'
+p94
+sI4
+S'from nltk.tokenize import word_tokenize,sent_tokenize #tokenize'
+p95
+sI5
+S'from nltk.stem.snowball import SnowballStemmer #stemming'
+p96
+sI6
+S'from nltk.stem.porter import *'
+p97
+sI7
+S'from nltk.corpus import state_union #part of speech'
+p98
+sI8
+S'from nltk.corpus import wordnet as wn'
+p99
+sI9
+S'from nltk.sentiment.vader import SentimentIntensityAnalyzer'
+p100
+sI10
+S''
+sI11
+S''
+ssg83
+S'()'
+p101
+sg85
+S'<module>'
+p102
+sa(dp103
+g62
+S'/var/www/web2py/gluon/custom_import.py'
+p104
+sg64
+(dp105
+S'builtinstr'
+p106
+S"<type 'str'>"
+p107
+sS'builtinImportError'
+p108
+S"<type 'exceptions.ImportError'>"
+p109
+sS'e'
+S"KeyError('applications.nltk.modules.nltk',)"
+p110
+ssg70
+I89
+sg71
+(dp111
+I84
+S'                        new_mod = base_importer('
+p112
+sI85
+S'                            modules_prefix, globals, locals, [itemname], level)'
+p113
+sI86
+S'                        try:'
+p114
+sI87
+S"                            result = result or sys.modules[modules_prefix+'.'+itemname]"
+p115
+sI88
+S'                        except KeyError, e:'
+p116
+sI89
+S"                            raise ImportError, 'Cannot import module %s' % str(e)"
+p117
+sI90
+S'                        modules_prefix += "." + itemname'
+p118
+sI91
+S'                    return result'
+p119
+sI92
+S'                else:'
+p120
+sI93
+S'                    # import like "from x import a, b, ..."'
+p121
+ssg83
+S"(name='nltk', globals={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}, locals={'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}, fromlist=[], level=-1)"
+p122
+sg85
+S'custom_importer'
+p123
+sasS'pyver'
+p124
+S'Python 2.7.9: /usr/bin/python (prefix: /usr)'
+p125
+sS'session'
+p126
+g57
+(S's\x1a\x00\x00\x00<div><table></table></div>'
+tRp127
+sS'etype'
+p128
+S"<type 'exceptions.ImportError'>"
+p129
+sS'date'
+p130
+S'Sun May 21 23:40:47 2017'
+p131
+sS'response'
+p132
+g57
+(S's\x1a>\x00\x00<div><table><tr><td style="font-weight:bold;vertical-align:top;">body</td><td style="vertical-align:top;">:</td><td><div>&lt;cStringIO.StringO object at 0x7f8ae5abd7d8&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">cookies</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">session_id_nltk</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1-8f53fbf8-922a-487a-9fb1-b378d3b1a9da<table><tr><td style="font-weight:bold;vertical-align:top;">comment</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">domain</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">expires</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">httponly</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">max-age</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">path</td><td style="vertical-align:top;">:</td><td><div>/</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">secure</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">version</td><td style="vertical-align:top;">:</td><td><div></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">delimiters</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>{{</div></td></tr><tr><td><div>}}</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">files</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">flash</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">form_label_separator</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">formstyle</td><td style="vertical-align:top;">:</td><td><div>bootstrap3_inline</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generic_patterns</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">google_analytics_id</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">headers</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">X-Powered-By</td><td style="vertical-align:top;">:</td><td><div>web2py</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">logo</td><td style="vertical-align:top;">:</td><td><div><a class="navbar-brand" href="http://www.web2py.com/" id="web2py-logo"><b>web<span>2</span>py</b>&trade;&nbsp;</a></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">menu</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div><table><tr><td><div>Anasayfa</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/nltk/default/index</div></td></tr><tr><td><div><table></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Sitelerim</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/site</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Bu Uygulama</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>#</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>Design</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/design/nltk</div></td></tr></table></div></td></tr><tr><td><div><li class="divider"></li></div></td></tr><tr><td><div><table><tr><td><div>Denet\xc3\xa7i</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/nltk/controllers/default.py</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>G\xc3\xb6r\xc3\xbcn\xc3\xbcm</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/nltk/views/default/index.html</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>DB Modeli</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/nltk/models/db.py</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Model Men\xc3\xbc</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/nltk/models/menu.py</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Config.ini</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/nltk/private/appconfig.ini</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>\xc5\x9eablon</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/nltk/views/layout.html</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Stil \xc5\x9eablonu</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/edit/nltk/static/css/web2py-bootstrap3.css</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Veritaban\xc4\xb1</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/nltk/appadmin/index</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Hatalar</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/errors/nltk</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Hakk\xc4\xb1nda</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>/admin/default/about/nltk</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>web2py.com</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>#</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>\xc4\xb0ndir</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/examples/default/download</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Destek</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/examples/default/support</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Tan\xc4\xb1t\xc4\xb1m</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2py.com/demo_admin</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>H\xc4\xb1zl\xc4\xb1 \xc3\x96rnekler</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2py.com/examples/default/examples</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>SSS</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2py.com/AlterEgo</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Videolar</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/examples/default/videos/</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>\xc3\x9ccretsiz uygulamalar</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2py.com/appliances</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Eklentiler</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2py.com/plugins</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Tarifeler</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://web2pyslices.com/</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Kitap</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>#</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>Online book</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book</div></td></tr></table></div></td></tr><tr><td><div><li class="divider"></li></div></td></tr><tr><td><div><table><tr><td><div>\xc3\x96nz\xc3\xb6s</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/00</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Giri\xc5\x9f</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/01</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Python</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/02</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>G\xc3\xb6z gezdir</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/03</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>\xc3\x87ekirdek</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/04</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>G\xc3\xb6r\xc3\xbcn\xc3\xbcmler</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/05</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Veritaban\xc4\xb1</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/06</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Bi\xc3\xa7imler ve Do\xc4\x9frulay\xc4\xb1c\xc4\xb1lar</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/07</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>E-posta ve k\xc4\xb1sa mesaj (SMS)</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/08</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Eri\xc5\x9fim Denetimi</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/09</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Hizmetler</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/10</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Ajax Tarifleri</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/11</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Bile\xc5\x9fenler ve Eklentiler</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/12</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Yay\xc4\xb1nlama tarifleri</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/13</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Di\xc4\x9fer Tarifler</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/14</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Helping web2py</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/book/default/chapter/15</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Buy web2py\'s book</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://stores.lulu.com/web2py</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Topluluk</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>None</div></td></tr><tr><td><div><table><tr><td><div><table><tr><td><div>Gruplar</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://www.web2py.com/examples/default/usergroups</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Twitter</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://twitter.com/web2py</div></td></tr></table></div></td></tr><tr><td><div><table><tr><td><div>Canl\xc4\xb1 Sohbet</div></td></tr><tr><td><div>False</div></td></tr><tr><td><div>http://webchat.freenode.net/?channels=web2py</div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">meta</td><td style="vertical-align:top;">:</td><td><div><table><tr><td style="font-weight:bold;vertical-align:top;">author</td><td style="vertical-align:top;">:</td><td><div>Your Name &lt;you@example.com&gt;</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">description</td><td style="vertical-align:top;">:</td><td><div>a cool new app</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">generator</td><td style="vertical-align:top;">:</td><td><div>Web2py Web Framework</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">keywords</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>web2py</div></td></tr><tr><td><div>python</div></td></tr><tr><td><div>framework</div></td></tr></table></div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">models_to_run</td><td style="vertical-align:top;">:</td><td><div><table><tr><td><div>^\\w+\\.py$</div></td></tr><tr><td><div>^default/\\w+\\.py$</div></td></tr><tr><td><div>^default/index/\\w+\\.py$</div></td></tr></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">postprocessing</td><td style="vertical-align:top;">:</td><td><div><table></table></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_client</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_compression_level</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_cookie_expires</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_data_name</td><td style="vertical-align:top;">:</td><td><div>session_data_nltk</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_file</td><td style="vertical-align:top;">:</td><td><div>None</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_filename</td><td style="vertical-align:top;">:</td><td><div>/var/www/web2py/applications/nltk/sessions/172.17.0.1-8f53fbf8-922a-487a-9fb1-b378d3b1a9da</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_hash</td><td style="vertical-align:top;">:</td><td><div>c0762cbf4baf7f9af97c051e7fcb8083</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id</td><td style="vertical-align:top;">:</td><td><div>172.17.0.1-8f53fbf8-922a-487a-9fb1-b378d3b1a9da</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_id_name</td><td style="vertical-align:top;">:</td><td><div>session_id_nltk</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_masterapp</td><td style="vertical-align:top;">:</td><td><div>nltk</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_new</td><td style="vertical-align:top;">:</td><td><div>True</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">session_storage_type</td><td style="vertical-align:top;">:</td><td><div>file</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">status</td><td style="vertical-align:top;">:</td><td><div>200</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">subtitle</td><td style="vertical-align:top;">:</td><td><div></div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">title</td><td style="vertical-align:top;">:</td><td><div>Nltk</div></td></tr><tr><td style="font-weight:bold;vertical-align:top;">view</td><td style="vertical-align:top;">:</td><td><div>default/index.html</div></td></tr></table></div>'
+tRp133
+sS'locals'
+p134
+(dp135
+S'fromlist'
+p136
+S'[]'
+p137
+sS'e'
+S"KeyError('applications.nltk.modules.nltk',)"
+p138
+sS'name'
+p139
+S"'nltk'"
+p140
+sS'level'
+p141
+S'-1'
+p142
+sS'itemname'
+p143
+S"'nltk'"
+p144
+sS'e3'
+p145
+S"ImportError('No module named nltk',)"
+p146
+sS'base_importer'
+p147
+S'<built-in function __import__>'
+p148
+sS'globals'
+p149
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}"
+p150
+sS'result'
+p151
+S'None'
+p152
+sS'items'
+p153
+S"['', 'var', 'www', 'web2py', 'applications', 'nltk']"
+p154
+sS'modules_prefix'
+p155
+S"'applications.nltk.modules'"
+p156
+sS'new_mod'
+p157
+S"<module 'applications.nltk.modules' from 'applications/nltk/modules/__init__.pyc'>"
+p158
+sS'e1'
+p159
+S'ImportError("Cannot import module \'applications.nltk.modules.nltk\'",)'
+p160
+sS'import_tb'
+p161
+S'None'
+p162
+sg134
+S"{'A': <class 'gluon.html.A'>, 'ANY_OF': <class 'gluon.validators.ANY_OF'>, 'ASSIGNJS': <function ASSIGNJS>, 'AppConfig': <function AppConfig>, 'Auth': <class 'gluon.tools.Auth'>, 'B': <class 'gluon.html.B'>, 'BEAUTIFY': <class 'gluon.html.BEAUTIFY'>, 'BODY': <class 'gluon.html.BODY'>, 'BR': <class 'gluon.html.BR'>, 'BUTTON': <class 'gluon.html.BUTTON'>, ...}"
+p163
+sS'oname'
+p164
+S"'nltk'"
+p165
+sssS'traceback'
+p166
+S'Traceback (most recent call last):\n  File "/var/www/web2py/gluon/restricted.py", line 227, in restricted\n    exec ccode in environment\n  File "/var/www/web2py/applications/nltk/controllers/default.py", line 2, in <module>\n    import nltk\n  File "/var/www/web2py/gluon/custom_import.py", line 89, in custom_importer\n    raise ImportError, \'Cannot import module %s\' % str(e)\nImportError: Cannot import module \'applications.nltk.modules.nltk\'\n'
+p167
+s.

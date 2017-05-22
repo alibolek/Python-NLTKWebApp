@@ -1,0 +1,33 @@
+{{extend 'template.html'}}
+{{block content}}
+
+<form action="{{=URL('default','/stemming.html')}}" method="post">
+    <div id="parameters" align="left">
+      <h4><span class="label label-primary">Parameters</span>
+      <input type="radio" name="default" value="snowball">Snowball Stemming
+      <input type="radio" name="default" value="porter">Porter Stemming
+      
+      </h4>
+    </div>
+    {{if len(request.vars)!=0:}}
+    <div id="action" >
+        
+        <table id="boxes">
+  <tbody>
+    <tr>
+      <td>
+        <textarea name="input" class="text_area" >{{=user_input.input}}</textarea>
+      </td>
+      <td align="center"><input type="submit" id="submitButton"  class="btn btn-primary" value="Execute"></td>
+      <td>
+        <textarea name="output" class="text_area" >------------Text output----------
+{{for o in last:}}{{=o+","}}{{pass}}------------File output----------
+        </textarea>
+    </tr>
+  </tbody>
+</table></div>
+{{end}}
+
+  
+
+
