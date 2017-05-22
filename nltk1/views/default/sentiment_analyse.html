@@ -1,0 +1,43 @@
+{{extend 'template.html'}}
+{{block content}}
+
+<form action="{{=URL('default','/sentiment_analyse.html')}}" enctype="multipart/form-data" method="post">
+		<div id="parameters" align="left">
+			<h4><span class="label label-primary">INFO:</span>
+			There is no parameter for sentiment analyse. Nltk is using <i>VADER</i> sentiment analyse algorithm.
+			</h4>
+		</div>
+		{{if len(request.vars)!=0:}}
+		<div id="action" >
+				
+<table id="boxes">
+	<tbody>
+		<tr>
+			<td>
+				<textarea name="input" class="text_area" >{{=user_input.input}}</textarea>
+			</td>
+			<td align="center"><input type="submit" id="submitButton"  class="btn btn-primary" value="Execute"></td>
+			<td>
+				<textarea name="output" class="text_area" >------------Text output----------
+{{for sentence in tokenized:}}{{=sentence+'\n'}}{{ss=sid.polarity_scores(sentence)}}
+{{for k in sorted(ss):}}{{='{0}: {1}, '.format(k,ss[k])}}
+{{pass}}{{='\n'}}{{pass}}------------File output----------{{if request.vars.filename!='' and len(request.vars.filename.value)!="":}}
+{{for sentence in file_output_sent:}}{{=sentence+'\n'}}{{ss1=sid.polarity_scores(sentence)}}
+{{for k in sorted(ss1):}}{{='{0}: {1}, '.format(k,ss1[k])}}
+{{pass}}{{='\n'}}{{pass}}{{pass}}
+
+				</textarea>
+		</tr>
+	</tbody>
+</table></div>
+
+{{end}}
+
+	
+
+
+
+
+	
+
+

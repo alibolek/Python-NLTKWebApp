@@ -1,0 +1,31 @@
+{{extend 'template.html'}}
+{{block content}}
+<form action="{{=URL('default','/part_of_speech.html')}}" method="post">
+<div id="parameters" align="left">
+			<h4><span class="label label-primary">INFO:</span>There is no parameter for Part Of Speech Tagging.</h4></div>
+<div id="action" >
+{{if len(request.vars)!=0:}}
+		
+<table id="boxes">
+	<tbody>
+		<tr>
+			<td>
+				<textarea name="input" class="text_area" >{{=user_input.input}}</textarea>
+			</td>
+			<td align="center"><input type="submit" id="submitButton"  class="btn btn-primary" value="Execute"></td>
+			<td>
+				<textarea name="output" class="text_area" >------------Text output----------
+{{for o in tag_list:}}{{=o}}{{pass}}------------File output----------
+				</textarea>
+		</tr>
+	</tbody>
+</table></div>
+
+	 
+Meaning of tags are <a href="https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html">HERE</a>
+{{end}}
+
+
+	
+
+

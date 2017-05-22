@@ -41,9 +41,10 @@ WORKDIR /var/www/web2py
 RUN sudo -u www-data python -c "from gluon.main import save_password; save_password('123',8443)"
 
 
-CMD [ "python", "./my_script.py" ]
 
-COPY /nltk /var/www/web2py/applications/
+
+COPY /nltk1 /var/www/web2py/applications/
+COPY /my_script.py /var/www/web2py/
 EXPOSE 80
 EXPOSE 443
 
@@ -55,3 +56,4 @@ ENV APACHE_PID_FILE /var/run/apache2.pid
 ENV APACHE_RUN_DIR /var/run/apache2
 
 CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+CMD [ "python", "my_script.py" ]

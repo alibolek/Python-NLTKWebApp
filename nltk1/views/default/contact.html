@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body style="margin: 0px;">
+
+
+<style type="text/css">
+  .text_area{
+    height: 25em;
+    width: 25em;
+
+  }
+  #left{
+    margin-top: 50px;
+    float: left; 
+    height: 70%; 
+    width: 20%;
+  }
+  #main{
+    background-color: #d9edf7;
+     
+    float: left; 
+    height: 100%; 
+    width: 100%;
+  }
+  #parameters{
+    margin-top: 10px; 
+    float: left; 
+    height: 30%; 
+    width: 70%;
+  }
+  #action{
+    
+    /*background-color: red; */
+    float: left; 
+    height: 70%; 
+    width: 41em;
+  }
+</style>
+
+<div id="main" align="center"><h1>Muğla Sıtkı Koçman University <br>Natural Language Processing <br>NLTK Web Application</h1></div>
+
+
+    <div id="left" align="right" class="list-group">
+      <ul class="nav nav-pills nav-stacked">
+        <a href="{{=URL('default','/index.html')}}" class="list-group-item list-group-item-info" >HOME PAGE</a>
+        <a href="{{=URL('default','/tokenizer.html')}}" class="list-group-item list-group-item-info" >TOKENIZER</a>
+        <a href="{{=URL('default','/sentiment_analyse.html')}}" class="list-group-item list-group-item-info" >SENTIMENT ANALYSE</a>
+        <a href="{{=URL('default','/stop_words.html')}}" class="list-group-item list-group-item-info" >STOP WORDS</a>
+        <a href="{{=URL('default','/stemming.html')}}" class="list-group-item list-group-item-info" >STEMMING</a>
+        <a href="{{=URL('default','/part_of_speech.html')}}" class="list-group-item list-group-item-info" >PART OF SPEECH TAGGING</a>
+        <a href="{{=URL('default','/meaning.html')}}" class="list-group-item list-group-item-info" >DICTIONARY CORPUS</a>
+        <a href="http://www.nltk.org/py-modindex.html" class="list-group-item list-group-item-info" >ALL NLTK METHODS</a>
+        <a href="{{=URL('default','/contact.html')}}" class="list-group-item list-group-item-info" >CONTACT</a>
+      </ul>
+    </div>
+<form action="{{=URL('default','/contact.html')}}" method="post">
+    <div id="parameters" align="left">
+      <h4><span class="label label-primary">Dear User</span>
+      Thanks For Using My Website!
+      
+    </h4>
+    </div>
+    {{if len(request.vars)!=0:}}
+    <div id="action" >
+        
+        <table id="boxes">
+  <tbody>
+    <tr>
+      <td>
+        <textarea name="input" class="text_area" >To See Contact Information Execute Me :)</textarea>
+      </td>
+      <td align="center"><input type="submit" id="submitButton"  class="btn btn-primary" value="Execute"></td>
+      <td>
+        <textarea name="output" class="text_area" >{{=output}}
+        </textarea>
+    </tr>
+  </tbody>
+</table></div>
+{{else:}}
+      
+      <div id="action" >
+        
+        <table id="boxes">
+          <tbody>
+            <tr>
+              <td>
+                <textarea name="input" class="text_area" >To See Contact Information Execute Me :)</textarea>
+                
+              </td>
+              <td align="center"><input type="submit"  class="btn btn-primary" value="Execute"></td>
+              <td>
+                <textarea name="output" class="text_area" placeholder="Your output will appear here" ></textarea>
+            </tr>
+          </tbody>
+        </table></div>
+  </div>{{pass}}
+  </body>
+</html>
+
+  
+
+
